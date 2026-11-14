@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>诗词阁 · 全唐诗与宋词</title>
+<style>
+  :root{
+    --paper:#f6f1e7;
+    --paper-2:#fbf8f1;
+    --ink:#262220;
+    --ink-2:#5d564d;
+    --ink-3:#8a8175;
+    --line:#e2d8c6;
+    --accent:#a83a2f;
+    --accent-soft:#f0e2dc;
+    --shadow:0 10px 30px rgba(60,45,30,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.85), transparent 42%),
+      radial-gradient(circle at 82% 78%, rgba(255,255,255,.6), transparent 46%),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Songti SC","STSong","SimSun","PingFang SC","Microsoft YaHei",serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.7;
+    min-height:100vh;
+  }
+  .wrap{width:min(1180px,94vw);margin:0 auto}
+
+  /* 顶栏 */
+  header{position:sticky;top:0;z-index:30;background:rgba(246,241,231,.88);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:16px;padding:14px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+  .brand h1{margin:0;font-size:26px;letter-spacing:.16em;font-weight:600}
+  .brand small{color:var(--ink-3);font-size:12px;letter-spacing:.08em;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+  .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--paper-2)}
+  .seg button{border:0;background:transparent;padding:7px 18px;font-size:14px;cursor:pointer;
+    color:var(--ink-2);font-family:inherit;transition:.18s}
+  .seg button.active{background:var(--accent);color:#fdf8f2}
+  .search{position:relative;flex:1 1 300px;min-width:220px}
+  .search input{width:100%;padding:10px 46px 10px 16px;font-size:15px;font-family:inherit;color:var(--ink);
+    background:var(--paper-2);border:1px solid var(--line);border-radius:999px;outline:none;transition:.2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .search kbd{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+    background:#fff;font-family:system-ui,sans-serif}
+  .ghost{border:1px solid var(--line);background:var(--paper-2);color:var(--ink-2);padding:8px 16px;
+    border-radius:999px;font-size:14px;cursor:pointer;font-family:inherit;transition:.18s;white-space:nowrap}
+  .ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .ghost.on{background:var(--accent);border-color:var(--accent);color:#fdf8f2}
+
+  /* 主体 */
+  main{display:grid;grid-template-columns:210px 1fr;gap:34px;padding:26px 0 80px}
+  aside{position:sticky;top:86px;align-self:start;max-height:calc(100vh - 110px);overflow:auto}
+  aside h2{font-size:13px;letter-spacing:.18em;color:var(--ink-3);margin:0 0 12px;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-weight:500}
+  .alist{display:flex;flex-direction:column;gap:2px}
+  .alist button{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:8px;
+    font-family:inherit;font-size:14px;color:var(--ink-2);cursor:pointer;transition:.15s}
+  .alist button:hover{background:var(--paper-2);color:var(--ink)}
+  .alist button.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .alist .n{font-size:12px;color:var(--ink-3);font-family:system-ui,sans-serif}
+
+  .meta{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:13px;margin-bottom:14px;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);
+    border-radius:999px;padding:3px 12px;font-size:13px;cursor:pointer}
+
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;align-items:start}
+  .item{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+  .item:hover{border-color:#d3bfa6;box-shadow:var(--shadow);transform:translateY(-2px)}
+  .item .who{font-size:12.5px;color:var(--ink-3);letter-spacing:.05em;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+  .item h3{margin:4px 0 8px;font-size:18px;font-weight:600;letter-spacing:.04em;line-height:1.4;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .item p{margin:0;color:var(--ink-2);font-size:14px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .item mark{background:#f6e3a8;color:inherit;padding:0 1px;border-radius:2px}
+
+  .more{display:flex;justify-content:center;padding:26px 0}
+  .more button{border:1px solid var(--line);background:var(--paper-2);color:var(--ink-2);
+    padding:9px 26px;border-radius:999px;font-family:inherit;font-size:14px;cursor:pointer}
+  .more button:hover{border-color:var(--accent);color:var(--accent)}
+  .empty{text-align:center;padding:80px 0;color:var(--ink-3)}
+  .empty em{display:block;font-size:34px;font-style:normal;margin-bottom:10px;opacity:.5}
+
+  /* 详情 */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(38,32,26,.42);
+    backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px}
+  .modal.hidden{display:none}
+  .paper{background:var(--paper-2);border-radius:16px;box-shadow:0 24px 70px rgba(40,28,16,.28);
+    width:min(620px,100%);max-height:88vh;overflow:auto;padding:38px 44px 30px;position:relative;
+    animation:rise .22s ease-out}
+  @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+  .paper .kicker{font-size:13px;color:var(--ink-3);letter-spacing:.14em;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+  .paper h2{margin:6px 0 22px;font-size:27px;letter-spacing:.06em;font-weight:600;line-height:1.35}
+  .paper .body{font-size:18px;line-height:2.05;letter-spacing:.06em}
+  .paper .body p{margin:0 0 2px;transition:background .2s}
+  .paper .bio{margin-top:26px;padding-top:18px;border-top:1px dashed var(--line);
+    font-size:13.5px;color:var(--ink-2);line-height:1.9}
+  .paper .tools{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+  .paper .close{position:absolute;top:14px;right:16px;border:0;background:transparent;
+    font-size:22px;color:var(--ink-3);cursor:pointer;line-height:1;padding:6px}
+  .paper .close:hover{color:var(--accent)}
+  .caption{margin-top:8px;font-size:12px;color:var(--ink-3);text-align:right;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+
+  #boot{position:fixed;inset:0;display:flex;flex-direction:column;gap:14px;
+    align-items:center;justify-content:center;background:var(--paper);z-index:99;color:var(--ink-3)}
+  #boot .seal{width:46px;height:46px;border:2px solid var(--accent);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:19px}
+  #boot.fade{opacity:0;pointer-events:none;transition:opacity .45s}
+
+  .toast{position:fixed;left:50%;bottom:36px;transform:translate(-50%,10px);background:var(--ink);
+    color:#f6f1e7;padding:10px 20px;border-radius:999px;font-size:13.5px;opacity:0;
+    transition:.25s;z-index:80;pointer-events:none;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:880px){
+    main{grid-template-columns:1fr;gap:18px}
+    aside{position:static;max-height:none;order:2}
+    .alist{flex-direction:row;flex-wrap:wrap}
+    .paper{padding:28px 24px 22px}
+    .paper .body{font-size:17px}
+    .brand h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<div id="boot"><div class="seal">诗</div><div>正在载入诗词库…</div></div>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><h1>诗词阁</h1><small>全唐诗 · 全宋词</small></div>
+    <div class="seg" id="scope">
+      <button data-s="tang" class="active">唐诗</button>
+      <button data-s="song">宋词</button>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="搜标题、作者或诗句，多个词用空格分隔" autocomplete="off">
+      <kbd>/</kbd>
+    </div>
+    <button class="ghost" id="btnRandom">随机一首</button>
+    <button class="ghost" id="btnConv">简体</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <aside>
+    <h2>诗人词客</h2>
+    <div class="alist" id="authors"></div>
+  </aside>
+  <section>
+    <div class="meta" id="meta"></div>
+    <div class="list" id="list"></div>
+    <div class="more" id="more"></div>
+  </section>
+</main>
+
+<div class="modal hidden" id="modal">
+  <div class="paper" id="paper"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script defer src="data/dict.js"></script>
+<script defer src="data/authors.js"></script>
+<script defer src="data/tang.js"></script>
+<script defer src="app.js"></script>
+</body>
+</html>
