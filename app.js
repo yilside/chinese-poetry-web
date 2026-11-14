@@ -45,15 +45,15 @@
   }
 
   function esc(text) {
-    return text.replace(/[&<>\"]/g, function (m) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[m];
+    return text.replace(/[&<>"]/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m];
     });
   }
 
   function currentTerms() {
     var raw = S.q.trim();
     if (!raw) return [];
-    return conv(raw).split(/\\s+/).filter(Boolean);
+    return conv(raw).split(/\s+/).filter(Boolean);
   }
 
   /* 把整个 scope 转成简体检索串，只在需要时构建一次 */
